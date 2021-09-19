@@ -1,5 +1,7 @@
 package com.bridgelabz.employeepayrollsystem;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
@@ -16,6 +18,10 @@ public class EmployeePayrollServiceTest {
 		EmployeePayrollService employeePayrollService;
 		employeePayrollService = new EmployeePayrollService(Arrays.asList(arrayOfEmps));
 		employeePayrollService.writeEmployeePayrollData(EmployeePayrollService.IOService.FILE_IO);
+		employeePayrollService.printData(EmployeePayrollService.IOService.FILE_IO);
+		long entries = employeePayrollService.countEntries(EmployeePayrollService.IOService.FILE_IO);
+		assertEquals( 3, entries);
+		
 	}
 
 }

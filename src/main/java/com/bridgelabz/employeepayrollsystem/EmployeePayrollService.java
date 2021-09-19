@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import com.bridgelabz.employeepayrollsystem.EmployeePayrollService.IOService;
+
 public class EmployeePayrollService {
 	public enum IOService 
 	{
@@ -60,5 +62,14 @@ public class EmployeePayrollService {
 			return new EmployeePayrollFileIOService().countEntries();
 		}
 		return 0;
+	}
+	public long readEmployeePayrollData(IOService ioservice) {
+		List<String> employeePayrollFromFile = new ArrayList<String>();
+		if(ioservice.equals(IOService.FILE_IO)) {
+			System.out.println("Employee Details from payroll-file.txt");
+			employeePayrollFromFile = new EmployeePayrollFileIOService().readEmployeePayrollData();
+			
+		}
+		return employeePayrollFromFile.size();
 	}
 }

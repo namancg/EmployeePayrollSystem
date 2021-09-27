@@ -92,6 +92,8 @@ public class EmployeePayrollService {
 	public void updateEmployeeSalary(String name, double salary) {
 		try {
 			int result = new EmployeePayrollDBService().updateEmployeeSalary(name, salary);
+			if(result == 0) 
+				return;
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -54,7 +54,7 @@ public class EmployeePayrollDBService {
 		
 	}
 	
-	int updateEmployeeDataUsingStatement(String name,double salary) throws SQLException {
+	public int updateEmployeeDataUsingStatement(String name,double salary) throws SQLException {
 		String sqlString = String.format("update employee_payroll set salary = %2f where name = '%s';",salary,name);
 		try(Connection connection = this.getConnection()) {
 			Statement statement = connection.createStatement();
@@ -110,7 +110,7 @@ public class EmployeePayrollDBService {
 		}
 		return employeePayrollList;
 	}
-public List<EmployeePayrollData> getEmployeePayrollData(String name) {
+	public List<EmployeePayrollData> getEmployeePayrollData(String name) {
 		
 		List<EmployeePayrollData> employeePayrollList = null;
 		if(this.employeePayrollDataStatement == null)

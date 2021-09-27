@@ -9,9 +9,6 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.bridgelabz.employeepayrollsystem.EmployeePayrollService.IOService;
-
-
-
 public class EmployeePayrollServiceTest {
 
 	@Test
@@ -34,12 +31,20 @@ public class EmployeePayrollServiceTest {
 	EmployeePayrollService employeePayrollService = new EmployeePayrollService();
 	long entries = employeePayrollService.readDataFromFile(IOService.FILE_IO);
 	Assert.assertEquals(3, entries);
-}
+	}
 	@Test
 	public void givenEmployeePayrollInDB_WhenRetrieved_ShouldMatchEmployeeCount(){
 		
 		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
 		List<EmployeePayrollData> employeePayrollData = employeePayrollService.readEmployeePayrollData(IOService.DB_IO);
-		Assert.assertEquals(2, employeePayrollData.size());
+		Assert.assertEquals(7, employeePayrollData.size());
+	}
+	@Test 
+	public void givenNewSalaryForEmployee_WhenUpdated_ShouldSyncWithDB()
+	{	
+		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
+		employeePayrollService.readEmployeePayrollData(IOService.DB_IO);
+		employeePayrollService.updateEmployeeSalary("Jeff Bezoz",70000.0);
+		
 	}
 }

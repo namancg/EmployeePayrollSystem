@@ -44,7 +44,25 @@ public class EmployeePayrollServiceTest {
 	{	
 		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
 		employeePayrollService.readEmployeePayrollData(IOService.DB_IO);
-		employeePayrollService.updateEmployeeSalary("Jeff Bezoz",70000.0);
+		employeePayrollService.updateEmployeeSalary("Jeff Bezoz",80000.0);
 		
+	}
+	@Test
+	public void givenName_WhenFound_ShouldReturnEmployeeDetails()
+	{
+		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
+		String name = "NAMAN";
+		List<EmployeePayrollData> employeePayrollData = employeePayrollService.getEmployeeDetailsBasedOnName(IOService.DB_IO, name);
+		String resultName = employeePayrollData.get(0).employeeName;
+		Assert.assertEquals(name, resultName);
+	}
+	
+	@Test
+	public void givenStartDateRange_WhenMatches_ShouldReturnEmployeeDetails()
+	{
+		String startDate = "2021-08-28";
+		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
+		List<EmployeePayrollData> employeePayrollData = employeePayrollService.getEmployeeDetailsBasedOnStartDate(IOService.DB_IO, startDate);
+		Assert.assertEquals(1, employeePayrollData.size());
 	}
 }

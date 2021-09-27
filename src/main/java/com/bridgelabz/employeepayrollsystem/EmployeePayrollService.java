@@ -3,8 +3,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.sql.SQLException;
-import java.time.LocalDate;
-import com.bridgelabz.employeepayrollsystem.EmployeePayrollService.IOService;
 
 public class EmployeePayrollService {
 
@@ -15,8 +13,15 @@ public class EmployeePayrollService {
 		CONSOLE_IO, FILE_IO, DB_IO, REST_IO
 	}
 
-	public EmployeePayrollService() {
-	}	
+	public EmployeePayrollService(List<EmployeePayrollData> employeePayrollList)
+	{
+		this.employeePayrollList = employeePayrollList;
+	}
+	
+	public EmployeePayrollService()
+	{
+		employeePayrollDBService =  EmployeePayrollDBService.getInstance();
+	}
 	public static void main(String[] args) {
 		ArrayList<EmployeePayrollData> employeePayrollList  = new ArrayList<EmployeePayrollData>();
 		EmployeePayrollService employeePayrollService = new EmployeePayrollService(employeePayrollList);
@@ -44,11 +49,6 @@ public class EmployeePayrollService {
 				.filter(EmployeePayrollDataItem -> EmployeePayrollDataItem.employeeName.equals(name))
 				.findFirst()
 				.orElse(null);
-	}
-
-	public EmployeePayrollService(List<EmployeePayrollData> employeePayrollList) 
-	{
-		this.employeePayrollList = employeePayrollList;
 	}
 	public void printData(IOService fileIo) {
 		if(fileIo.equals(IOService.FILE_IO)) new EmployeePayrollFileIOService().printData();
@@ -117,9 +117,30 @@ public class EmployeePayrollService {
 		return employeePayrollDataList.get(0).equals(getEmployeePayrollData(name));
 	}
 	public List<EmployeePayrollData> getEmployeeDetailsBasedOnName(IOService ioService, String name) {
-	if(ioService.equals(IOService.DB_IO))
-		this.employeePayrollList = employeePayrollDBService.getEmployeeDetailsBasedOnNameUsingStatement(name);
-	return this.employeePayrollList;
-}
+		if(ioService.equals(IOService.DB_IO)) {
+			this.employeePayrollList = employeePayrollDBService.getEmployeeDetailsBasedOnNameUsingStatement(name);
+			System.out.println("employee details based on name");
+			displayData();
+		}
+		return this.employeePayrollList;
+	}
+	public List<EmployeePayrollData> getEmployeeDetailsBasedOnStartDate(IOService ioService, String startDate) {
+		if(ioService.equals(IOService.DB_IO))
+			this.employeePayrollList = employeePayrollDBService.getEmployeeDetailsBasedOnStartDateUsingStatement(startDate);
+		System.out.println("employee details based on date range");
+		displayData();
+		return this.employeePayrollList;
+	}
+	
+	private void displayData() {
+		employeePayrollDBService.displayDate();
+		
+	}
+public List<EmployeePayrollData> getEmployeeDetailsBasedOnStartDateUsingPreparedStatement(IOService ioService, String startDate) {
+		
+		if(ioService.equals(IOService.DB_IO))
+			this.employeePayrollList = employeePayrollDBService.getEmployeeDetailsBasedOnStartDateUsingPreparedStatement(startDate);
+		return this.employeePayrollList;
+	}
 	
 }

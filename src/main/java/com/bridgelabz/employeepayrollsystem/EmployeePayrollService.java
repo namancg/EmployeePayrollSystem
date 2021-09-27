@@ -101,7 +101,8 @@ public class EmployeePayrollService {
 		
 		
 	}
-	public void updateEmployeeSalaryUsingStatement(String name, double salary) throws SQLException {
+	public void updateEmployeeSalaryUsingStatement(String name, double salary) throws SQLException 
+	{
 		
 		int result = employeePayrollDBService.updateEmployeeDataUsingStatement(name,salary);
 		if(result == 0) 
@@ -111,12 +112,14 @@ public class EmployeePayrollService {
 		if(employeePayrollData != null)
 			employeePayrollData.employeeSalary = salary;		
 	}
-	public boolean checkEmployeePayrollInSyncWithDB(String name) {
+	public boolean checkEmployeePayrollInSyncWithDB(String name) 
+	{
 		
 		List<EmployeePayrollData> employeePayrollDataList = employeePayrollDBService.getEmployeePayrollData(name);
 		return employeePayrollDataList.get(0).equals(getEmployeePayrollData(name));
 	}
-	public List<EmployeePayrollData> getEmployeeDetailsBasedOnName(IOService ioService, String name) {
+	public List<EmployeePayrollData> getEmployeeDetailsBasedOnName(IOService ioService, String name)
+	{
 		if(ioService.equals(IOService.DB_IO)) {
 			this.employeePayrollList = employeePayrollDBService.getEmployeeDetailsBasedOnNameUsingStatement(name);
 			System.out.println("employee details based on name");
@@ -124,7 +127,8 @@ public class EmployeePayrollService {
 		}
 		return this.employeePayrollList;
 	}
-	public List<EmployeePayrollData> getEmployeeDetailsBasedOnStartDate(IOService ioService, String startDate) {
+	public List<EmployeePayrollData> getEmployeeDetailsBasedOnStartDate(IOService ioService, String startDate) 
+	{
 		if(ioService.equals(IOService.DB_IO))
 			this.employeePayrollList = employeePayrollDBService.getEmployeeDetailsBasedOnStartDateUsingStatement(startDate);
 		System.out.println("employee details based on date range");
@@ -132,15 +136,57 @@ public class EmployeePayrollService {
 		return this.employeePayrollList;
 	}
 	
-	private void displayData() {
+	private void displayData() 
+	{
 		employeePayrollDBService.displayDate();
 		
 	}
-public List<EmployeePayrollData> getEmployeeDetailsBasedOnStartDateUsingPreparedStatement(IOService ioService, String startDate) {
+    public List<EmployeePayrollData> getEmployeeDetailsBasedOnStartDateUsingPreparedStatement(IOService ioService, String startDate) 
+    {
 		
 		if(ioService.equals(IOService.DB_IO))
 			this.employeePayrollList = employeePayrollDBService.getEmployeeDetailsBasedOnStartDateUsingPreparedStatement(startDate);
 		return this.employeePayrollList;
 	}
+    public List<Double> getSumOfSalaryBasedOnGender(IOService ioService) 
+    {
+		
+		List<Double> sumOfSalaryBasedOnGender = new ArrayList<Double>();
+		if(ioService.equals(IOService.DB_IO))
+			sumOfSalaryBasedOnGender = employeePayrollDBService.getSumOfSalaryBasedOnGenderUsingStatement();
+		return sumOfSalaryBasedOnGender;	
+	}
+
+	public List<Double> getAverageOfSalaryBasedOnGender(IOService ioService)
+	{
+		List<Double> averageOfSalaryBasedOnGender = new ArrayList<Double>();
+		if(ioService.equals(IOService.DB_IO))
+			averageOfSalaryBasedOnGender = employeePayrollDBService.getAverageOfSalaryBasedOnGenderUsingStatement();
+		return averageOfSalaryBasedOnGender;
+	}
+
+	public List<Double> getMinimumSalaryBasedOnGender(IOService ioService)
+	{
+		List<Double> minimumSalaryBasedOnGender = new ArrayList<Double>();
+		if(ioService.equals(IOService.DB_IO))
+			minimumSalaryBasedOnGender = employeePayrollDBService.getMinimumSalaryBasedOnGenderUsingStatement();
+		return minimumSalaryBasedOnGender;
+	}
+	
+	public List<Double> getMaximumSalaryBasedOnGender(IOService ioService) 
+	{
+		List<Double> maximumSalaryBasedOnGender = new ArrayList<Double>();
+		if(ioService.equals(IOService.DB_IO))
+			maximumSalaryBasedOnGender = employeePayrollDBService.getMaximumSalaryBasedOnGenderUsingStatement();
+		return maximumSalaryBasedOnGender;
+	}
+	public List<Integer> getCountOfEmployeesBasedOnGender(IOService ioService)
+	{
+		List<Integer> countBasedOnGender = new ArrayList<Integer>();
+		if(ioService.equals(IOService.DB_IO))
+			countBasedOnGender = employeePayrollDBService.getCountOfEmployeesBasedOnGenderUsingStatement();
+		return countBasedOnGender;
+	}
+	
 	
 }

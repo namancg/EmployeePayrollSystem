@@ -12,6 +12,13 @@ import java.util.List;
 
 public class EmployeePayrollDBService {
 	private PreparedStatement employeePayrollDataStatement;
+	private static List<EmployeePayrollData> employeePayrollList;
+	private static EmployeePayrollDBService employeePayrollDBService;
+	public static EmployeePayrollDBService getInstance() {
+		if(employeePayrollDBService == null)
+			employeePayrollDBService = new EmployeePayrollDBService();
+		return employeePayrollDBService;
+	}
 	private Connection getConnection() throws SQLException {
 		
 		String jdbcURL = "jdbc:mysql://localhost:3306/payroll_service_db?useSSL=false";
@@ -124,6 +131,52 @@ public class EmployeePayrollDBService {
 			e.printStackTrace();
 		}
 		return employeePayrollList;
+	}
+	public List<EmployeePayrollData> getEmployeeDetailsBasedOnStartDateUsingStatement(String startDate) {
+		
+		String sql = String.format("SELECT * FROM employee_payroll WHERE startDate BETWEEN CAST('%s' AS DATE) AND DATE(NOW());",startDate);
+		List<EmployeePayrollData> employeePayrollList = new ArrayList<>();
+				
+		try (Connection connection = getConnection();){
+			Statement statement = connection.createStatement();
+			ResultSet resultSet = statement.executeQuery(sql);
+			employeePayrollList = this.getEmployeePayrollData(resultSet);
+		}
+		catch(SQLException e){
+			e.printStackTrace();
+		}
+		return employeePayrollList;
+	}
+
+	public List<EmployeePayrollData> getEmployeeDetailsBasedOnStartDateUsingPreparedStatement(String startDate) 
+	{
+		List<EmployeePayrollData> employeePayrollList = null;
+		if(this.employeePayrollDataStatement == null)
+			this.preparedStatementForEmployeeDataBasedOnStartDate();
+		try {
+			employeePayrollDataStatement.setString(1,startDate);
+			ResultSet resultSet = employeePayrollDataStatement.executeQuery();
+			employeePayrollList = this.getEmployeePayrollData(resultSet);	
+		}
+		catch(SQLException e) {
+			e.printStackTrace();
+		}
+		return employeePayrollList;
+	}
+
+	private void preparedStatementForEmployeeDataBasedOnStartDate() {
+		try {
+			Connection connection = this.getConnection();
+			String sql = "SELECT * FROM employee_payroll WHERE startDate BETWEEN CAST(? AS DATE) AND DATE(NOW());";
+			employeePayrollDataStatement = connection.prepareStatement(sql);
+		}
+		catch(SQLException e) {
+			e.printStackTrace();
+		}
+		
+	}
+	public void displayDate() {
+		System.out.println(employeePayrollList);
 	}
 	
 }

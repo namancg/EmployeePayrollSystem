@@ -140,7 +140,7 @@ public class EmployeePayrollServiceTest {
 	{
 		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
 		employeePayrollService.readEmployeePayrollData(IOService.DB_IO);
-		employeePayrollService.addEmployeeToPayroll("Mark", 50000, LocalDate.now(), "M");
+		employeePayrollService.addEmployeeToPayroll(8, "Mark", 5000000.00, 1234567890, LocalDate.now(), "M", 1);
 		boolean result = employeePayrollService.checkEmployeePayrollInSyncWithDB("Mark");
 		Assert.assertEquals(true,result);
 	}

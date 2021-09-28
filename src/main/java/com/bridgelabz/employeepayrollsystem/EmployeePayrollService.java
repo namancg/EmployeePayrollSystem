@@ -198,9 +198,9 @@ public class EmployeePayrollService {
 			countBasedOnGender = employeePayrollDBService.getCountOfEmployeesBasedOnGenderUsingStatement();
 		return countBasedOnGender;
 	}
-	public void addEmployeeToPayroll(String name, double salary, LocalDate start, String gender) {
+	public void addEmployeeToPayroll(int id, String name, double salary, long phoneNumber, LocalDate start, String gender, int companyId) {
 
-		employeePayrollList.add(employeePayrollDBService.addEmployeeToPayroll(name, salary, start, gender));
+		employeePayrollList.add(employeePayrollDBService.addEmployeeToPayroll(id, name, salary, phoneNumber, start, gender, companyId));
 	}
 	 public Payroll insertEmployeePayrollValues(Employee employee, double basicSalary) {
 	     double deduction=(basicSalary/5);

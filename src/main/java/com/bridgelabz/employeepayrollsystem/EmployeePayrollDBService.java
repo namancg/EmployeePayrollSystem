@@ -346,6 +346,7 @@ public Payroll insertEmployeePayrollValues(Employee employee, Payroll payroll) {
     Payroll updatedPayroll;
     String insertEmployee = String.format("insert into employee values('%s','%s','%s','%s','%s','%s','%s')", employee.getId(), employee.getName(), employee.getGender(), employee.getAddress(), employee.getPhoneNumber(), Date.valueOf(employee.getStartDate()), employee.getCompanyId());
     String insertPayroll = String.format("insert into payroll values('%s','%s','%s','%s','%s','%s')", payroll.getEmployeeId(), payroll.getBasicPay(), payroll.getDeductions(), payroll.getTaxablePay(), payroll.getIncomeTax(), payroll.getNetPay());
+    String insertEmployeeDepartment=String.format("insert into employee_department values('%s','%s')",employee.getId(),employee.getDepartmentList().get(0).id);
     Connection connection;
     try {
         connection = this.getConnection();
@@ -365,6 +366,17 @@ public Payroll insertEmployeePayrollValues(Employee employee, Payroll payroll) {
     }
     try (Statement statement = connection.createStatement()) {
         statement.executeUpdate(insertPayroll);
+    }
+    catch (Exception e) {
+        try {
+            connection.rollback();
+        } catch (Exception exec) {
+            throw new DBException(exec.getMessage());
+        }
+        throw new DBException(e.getMessage());
+    }
+    try(Statement statement=connection.createStatement()){
+        statement.executeUpdate(insertEmployeeDepartment);
         connection.commit();
         updatedPayroll = payroll;
     } catch (Exception e) {

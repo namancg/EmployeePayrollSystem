@@ -38,7 +38,7 @@ public class EmployeePayrollServiceTest {
 		
 		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
 		List<EmployeePayrollData> employeePayrollData = employeePayrollService.readEmployeePayrollData(IOService.DB_IO);
-		Assert.assertEquals(7, employeePayrollData.size());
+		Assert.assertEquals(8, employeePayrollData.size());
 	}
 	@Test 
 	public void givenNewSalaryForEmployee_WhenUpdated_ShouldSyncWithDB()
@@ -64,14 +64,15 @@ public class EmployeePayrollServiceTest {
 		String startDate = "2021-08-28";
 		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
 		List<EmployeePayrollData> employeePayrollData = employeePayrollService.getEmployeeDetailsBasedOnStartDate(IOService.DB_IO, startDate);
-		Assert.assertEquals(1, employeePayrollData.size());
+		Assert.assertEquals(2, employeePayrollData.size());
 	}
 	@Test
-	public void givenEmployeePayrollInDB_ShouldReturnSumOfSalaryBasedOnGender() {
+	public void givenEmployeePayrollInDB_ShouldReturnSumOfSalaryBasedOnGender() 
+	{
 		
 		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
 		List<Double> expectedSalarySum = new ArrayList<Double>();
-		expectedSalarySum.add(204000.00);
+		expectedSalarySum.add(254000.00);
 		expectedSalarySum.add(203000.00);
 		List<Double> sumOfSalaryBasedOnGender = employeePayrollService.getSumOfSalaryBasedOnGender(IOService.DB_IO);
 		if(sumOfSalaryBasedOnGender.size() == 2) {
@@ -81,11 +82,12 @@ public class EmployeePayrollServiceTest {
 	}
 	
 	@Test
-	public void givenEmployeePayrollInDB_ShouldReturnAverageOfSalaryBasedOnGender() {
+	public void givenEmployeePayrollInDB_ShouldReturnAverageOfSalaryBasedOnGender() 
+	{
 		
 		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
 		List<Double> expectedSalaryAverage = new ArrayList<Double>();
-		expectedSalaryAverage.add(51000.00);
+		expectedSalaryAverage.add(50800.00);
 		expectedSalaryAverage.add(67666.66666666667);
 		List<Double> averageOfSalaryBasedOnGender = employeePayrollService.getAverageOfSalaryBasedOnGender(IOService.DB_IO);
 		if(averageOfSalaryBasedOnGender.size() == 2) {
@@ -94,7 +96,8 @@ public class EmployeePayrollServiceTest {
 	}
 	
 	@Test
-	public void givenEmployeePayrollInDB_ShouldReturnMinimumSalaryBasedOnGender() {
+	public void givenEmployeePayrollInDB_ShouldReturnMinimumSalaryBasedOnGender() 
+	{
 		
 		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
 		List<Double> expectedMinimumSalary = new ArrayList<Double>();
@@ -107,7 +110,8 @@ public class EmployeePayrollServiceTest {
 	}
 	
 	@Test
-	public void givenEmployeePayrollInDB_ShouldReturnMaximumSalaryBasedOnGender() {
+	public void givenEmployeePayrollInDB_ShouldReturnMaximumSalaryBasedOnGender() 
+	{
 		
 		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
 		List<Double> expectedMaximumSalary = new ArrayList<Double>();
@@ -120,15 +124,26 @@ public class EmployeePayrollServiceTest {
 	}
 	
 	@Test
-	public void givenEmployeePayrollInDB_ShouldReturnCountOfBasedOnGender() {
+	public void givenEmployeePayrollInDB_ShouldReturnCountOfBasedOnGender() 
+	{
 		
 		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
 		List<Integer> expectedCountBasedOnGender = new ArrayList<Integer>();
-		expectedCountBasedOnGender.add(4);
+		expectedCountBasedOnGender.add(5);
 		expectedCountBasedOnGender.add(3);
 		List<Integer> countBasedOnGender = employeePayrollService.getCountOfEmployeesBasedOnGender(IOService.DB_IO);
 		if(countBasedOnGender.size() == 2) {
 			Assert.assertEquals(expectedCountBasedOnGender, countBasedOnGender);
 		}
 	}
+	@Test
+	public void givenNewEmployee_WhenAdded_ShouldSyncWithDB()
+	{
+		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
+		employeePayrollService.readEmployeePayrollData(IOService.DB_IO);
+		employeePayrollService.addEmployeeToPayroll("Mark", 50000, LocalDate.now(), "M");
+		boolean result = employeePayrollService.checkEmployeePayrollInSyncWithDB("Mark");
+		Assert.assertEquals(true,result);
+	}
+	
 }

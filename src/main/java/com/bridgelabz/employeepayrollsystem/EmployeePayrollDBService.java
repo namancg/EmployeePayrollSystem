@@ -15,8 +15,11 @@ import com.bridgelabz.employeepayrollsystem.EmployeePayrollException.ExceptionTy
 
 public class EmployeePayrollDBService {
 	private PreparedStatement employeePayrollDataStatement;
+	   private PreparedStatement preparedStatementForEmployeeData;
 	private static List<EmployeePayrollData> employeePayrollList;
 	private static EmployeePayrollDBService employeePayrollDBService;
+	  private PreparedStatement employeeJoinedGivenRangeStatement;
+	   List<Employee> employeeList;
 	public static EmployeePayrollDBService getInstance() {
 		if(employeePayrollDBService == null)
 			employeePayrollDBService = new EmployeePayrollDBService();
@@ -26,7 +29,6 @@ public class EmployeePayrollDBService {
 		
 		String jdbcURL = "jdbc:mysql://localhost:3306/payroll_service_db?useSSL=false";
 		String userName = "root";
-
 		String password = "naman1999";
 		Connection connection;
 		
@@ -36,6 +38,11 @@ public class EmployeePayrollDBService {
 		
 		return connection;
 	}
+	 public static EmployeePayrollDBService getDBServiceInstance() {
+	        if (employeePayrollDBService == null)
+	            employeePayrollDBService = new EmployeePayrollDBService();
+	        return employeePayrollDBService;
+	    }
 	
 	public List<EmployeePayrollData> readData(){
 		
@@ -301,6 +308,107 @@ public EmployeePayrollData addEmployeeToPayroll(String name, double salary, Loca
 		return employeePayrollData;
 		
 	}
+private List<Employee> getEmployeeDataList(ResultSet resultSet) {
+    employeeList = new ArrayList<>();
+    try {
+        while (resultSet.next()) {
+            employeeList.add(new Employee(resultSet.getInt("employee_id"), resultSet.getString("employe_name"), resultSet.getString("gender"), resultSet.getString("address"), resultSet.getLong("phone_number"), resultSet.getDate("start_date").toLocalDate(), resultSet.getInt("company_id")));
+        }
+    } catch (Exception e) {
+        throw new DBException(e.getMessage());
+    }
+    return employeeList;
+}
+private void preparedStatementToretriveEmployeeInRange() {
+    try {
+        Connection connection = this.getConnection();
+        String query = "select * from employee where start_date between ? and ?";
+        employeeJoinedGivenRangeStatement = connection.prepareStatement(query);
+    } catch (Exception e) {
+        throw new DBException(e.getMessage());
+    }
+}
+public List<Employee> readEmployedJoinedRange(Date startDate, Date endDate) {
+    if (employeeJoinedGivenRangeStatement == null) {
+        this.preparedStatementToretriveEmployeeInRange();
+    }
+    try {
+        employeeJoinedGivenRangeStatement.setDate(1, startDate);
+        employeeJoinedGivenRangeStatement.setDate(2, endDate);
+        ResultSet resultSet = employeeJoinedGivenRangeStatement.executeQuery();
+        return this.getEmployeeDataList(resultSet);
+    } catch (Exception e) {
+        throw new DBException(e.getMessage());
+    }
+}
+
+public Payroll insertEmployeePayrollValues(Employee employee, Payroll payroll) {
+    Payroll updatedPayroll;
+    String insertEmployee = String.format("insert into employee values('%s','%s','%s','%s','%s','%s','%s')", employee.getId(), employee.getName(), employee.getGender(), employee.getAddress(), employee.getPhoneNumber(), Date.valueOf(employee.getStartDate()), employee.getCompanyId());
+    String insertPayroll = String.format("insert into payroll values('%s','%s','%s','%s','%s','%s')", payroll.getEmployeeId(), payroll.getBasicPay(), payroll.getDeductions(), payroll.getTaxablePay(), payroll.getIncomeTax(), payroll.getNetPay());
+    Connection connection;
+    try {
+        connection = this.getConnection();
+        connection.setAutoCommit(false);
+    } catch (Exception e) {
+        throw new DBException(e.getMessage());
+    }
+    try (Statement statement = connection.createStatement()) {
+        statement.executeUpdate(insertEmployee);
+    } catch (Exception e) {
+        try {
+            connection.rollback();
+        } catch (Exception exec) {
+            throw new DBException(exec.getMessage());
+        }
+        throw new DBException(e.getMessage());
+    }
+    try (Statement statement = connection.createStatement()) {
+        statement.executeUpdate(insertPayroll);
+        connection.commit();
+        updatedPayroll = payroll;
+    } catch (Exception e) {
+        try {
+            connection.rollback();
+        } catch (Exception exec) {
+            throw new DBException(exec.getMessage());
+        }
+        throw new DBException(e.getMessage());
+    }
+    return updatedPayroll;
+}
+public List<Employee> readEmployeeDataFromDB(String name) {
+    if (preparedStatementForEmployeeData == null) {
+        this.preparedStatementToReadEmployeeData();
+    }
+    try {
+        preparedStatementForEmployeeData.setString(1, name);
+        ResultSet resultSet = preparedStatementForEmployeeData.executeQuery();
+        employeeList = this.getCompleteEmployeeDataList(resultSet);
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return employeeList;
+}
+private void preparedStatementToReadEmployeeData() {
+    try (Connection connection = this.getConnection()) {
+        String query = "select * from employee e, payroll p,company c where e.employee_ID=p.employee_ID and e.company_ID=c.company_ID and employe_name= ?";
+        preparedStatementForEmployeeData = connection.prepareStatement(query);
+    } catch (Exception e) {
+        throw new DBException(e.getMessage());
+    }
+}
+private List<Employee> getCompleteEmployeeDataList(ResultSet resultSet) {
+    employeeList = new ArrayList<>();
+    try {
+        while (resultSet.next()) {
+            employeeList.add(new Employee(resultSet.getInt("employee_ID"), resultSet.getString("employe_name"), resultSet.getString("gender"), resultSet.getString("address"), resultSet.getLong("phone_number"), resultSet.getDate("start_date").toLocalDate(), new Payroll(resultSet.getInt("employee_id"), resultSet.getDouble("basic_pay"), resultSet.getDouble("deductions"), resultSet.getDouble("taxable_pay"), resultSet.getDouble("income_tax"), resultSet.getDouble("net_pay")), new Company(resultSet.getInt("company_id"), resultSet.getString("company_name"))));
+        }
+    } catch (Exception e) {
+        throw new DBException(e.getMessage());
+    }
+    return employeeList;
+}
 	
 	
 }

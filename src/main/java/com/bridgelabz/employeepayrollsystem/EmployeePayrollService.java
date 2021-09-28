@@ -4,11 +4,13 @@ import java.util.List;
 import java.util.Scanner;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.sql.Date;
 
 public class EmployeePayrollService {
 
 	private List<EmployeePayrollData> employeePayrollList;
 	private EmployeePayrollDBService employeePayrollDBService;
+	private List<Employee> employeeList;
 	public enum IOService 
 	{
 		CONSOLE_IO, FILE_IO, DB_IO, REST_IO
@@ -23,6 +25,9 @@ public class EmployeePayrollService {
 	{
 		employeePayrollDBService =  EmployeePayrollDBService.getInstance();
 	}
+	 public List<Employee> readEmployeeJoinedInRange(LocalDate startDate,LocalDate endDate) {
+	        return EmployeePayrollDBService.getDBServiceInstance().readEmployedJoinedRange(Date.valueOf(startDate),Date.valueOf(endDate));
+	    }
 	public static void main(String[] args) {
 		ArrayList<EmployeePayrollData> employeePayrollList  = new ArrayList<EmployeePayrollData>();
 		EmployeePayrollService employeePayrollService = new EmployeePayrollService(employeePayrollList);
@@ -112,12 +117,17 @@ public class EmployeePayrollService {
 		if(employeePayrollData != null)
 			employeePayrollData.employeeSalary = salary;		
 	}
+	public List<Employee> readEmployeePayrollData(IOService ioservice, String... name) {
+        if (ioservice.equals(IOService.DB_IO))
+            this.employeeList = EmployeePayrollDBService.getDBServiceInstance().readEmployeeDataFromDB(name[0]);
+        return employeeList;
+    }
 	
 	public boolean checkEmployeePayrollInSyncWithDB(String name) 
 	{
 		
-		List<EmployeePayrollData> employeePayrollDataList = employeePayrollDBService.getEmployeePayrollData(name);
-		return employeePayrollDataList.get(0).equals(getEmployeePayrollData(name));
+		List<Employee> employeeList = EmployeePayrollDBService.getDBServiceInstance().employeeList;
+        return employeeList.get(0).getPayroll().toString().equals(readEmployeePayrollData(IOService.DB_IO, name).get(0).getPayroll().toString());
 	}
 	public List<EmployeePayrollData> getEmployeeDetailsBasedOnName(IOService ioService, String name)
 	{
@@ -192,6 +202,18 @@ public class EmployeePayrollService {
 
 		employeePayrollList.add(employeePayrollDBService.addEmployeeToPayroll(name, salary, start, gender));
 	}
+	 public Payroll insertEmployeePayrollValues(Employee employee, double basicSalary) {
+	     double deduction=(basicSalary/5);
+	     double taxabalePay=basicSalary-deduction;
+	     double incomeTax=taxabalePay/10;
+	     double netPay=basicSalary-incomeTax;
+	     Payroll payroll=new Payroll(employee.id,basicSalary,deduction,taxabalePay,incomeTax,netPay);
+	     return EmployeePayrollDBService.getDBServiceInstance().insertEmployeePayrollValues(employee,payroll);
+	    }
+
+	    public boolean compareEmployeePayrollInsertSync(String name,Payroll payroll) {
+	        return payroll.toString().equals(readEmployeePayrollData(IOService.DB_IO,name).get(0).getPayroll().toString());
+	    }
 	
 	
 }

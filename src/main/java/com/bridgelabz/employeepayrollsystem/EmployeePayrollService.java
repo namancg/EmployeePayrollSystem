@@ -3,6 +3,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.sql.SQLException;
+import java.time.LocalDate;
 
 public class EmployeePayrollService {
 
@@ -30,7 +31,6 @@ public class EmployeePayrollService {
 		employeePayrollService.readEmployeePayrollData(consoleInputReader);
 		employeePayrollService.writeEmployeePayrollData(IOService.CONSOLE_IO);		
 	}
-	
 	private void readEmployeePayrollData(Scanner consoleInputReader)
 	{
 		
@@ -112,6 +112,7 @@ public class EmployeePayrollService {
 		if(employeePayrollData != null)
 			employeePayrollData.employeeSalary = salary;		
 	}
+	
 	public boolean checkEmployeePayrollInSyncWithDB(String name) 
 	{
 		
@@ -186,6 +187,10 @@ public class EmployeePayrollService {
 		if(ioService.equals(IOService.DB_IO))
 			countBasedOnGender = employeePayrollDBService.getCountOfEmployeesBasedOnGenderUsingStatement();
 		return countBasedOnGender;
+	}
+	public void addEmployeeToPayroll(String name, double salary, LocalDate start, String gender) {
+
+		employeePayrollList.add(employeePayrollDBService.addEmployeeToPayroll(name, salary, start, gender));
 	}
 	
 	

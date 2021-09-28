@@ -72,7 +72,7 @@ public class EmployeePayrollDBService {
 	}
 	
 	public int updateEmployeeDataUsingStatement(String name,double salary) throws SQLException {
-		String sqlString = String.format("update employee_payroll set salary = %2f where name = '%s';",salary,name);
+		String sqlString = String.format("update employee_payroll set salary = %2f where employee_ID IN (SELECT employee_ID FROM employee WHERE employee_name = '%s');",salary,name);
 		try(Connection connection = this.getConnection()) {
 			Statement statement = connection.createStatement();
 			return statement.executeUpdate(sqlString);
@@ -87,7 +87,7 @@ public class EmployeePayrollDBService {
 			
 			try {
 				Connection connection = this.getConnection();
-				String sqlStatement = "SELECT * FROM employee_payroll WHERE name = ?;";
+				String sqlStatement = "SELECT * FROM employee JOIN employee_payroll ON employee.employee_ID = employee_payroll.id WHERE employee_name = ?;";
 				employeePayrollDataStatement = connection.prepareStatement(sqlStatement);
 			}
 			catch(SQLException e) {
@@ -96,7 +96,7 @@ public class EmployeePayrollDBService {
 		}
 
 	public List<EmployeePayrollData> getEmployeeDetailsBasedOnNameUsingStatement(String name) {
-		String sqlStatement = String.format("SELECT * FROM employee_payroll WHERE name = '%s';",name);
+		String sqlStatement = String.format("SELECT * FROM employee JOIN employee_payroll ON employee.employee_ID = employee_payroll.id WHERE employee_name = '%s';",name);
 		List<EmployeePayrollData> employeePayrollList = new ArrayList<>();
 				
 		try (Connection connection = getConnection();){
@@ -177,7 +177,7 @@ public class EmployeePayrollDBService {
 	private void preparedStatementForEmployeeDataBasedOnStartDate() {
 		try {
 			Connection connection = this.getConnection();
-			String sql = "SELECT * FROM employee_payroll WHERE startDate BETWEEN CAST(? AS DATE) AND DATE(NOW());";
+			String sql = "SELECT * FROM employee JOIN employee_payroll ON employee.employee_ID = employee_payroll.id WHERE start_date BETWEEN ? AND ?;";;
 			employeePayrollDataStatement = connection.prepareStatement(sql);
 		}
 		catch(SQLException e) {
@@ -190,7 +190,7 @@ public class EmployeePayrollDBService {
 	}
 	public List<Double> getSumOfSalaryBasedOnGenderUsingStatement() {
 		
-		String sqlStatement = "SELECT gender, SUM(salary) AS TotalSalary FROM employee_payroll GROUP BY gender;";
+		String sqlStatement = "SELECT gender, SUM(basic_salary) AS TotalSalary FROM employee JOIN employee_payroll ON employee.employee_ID = employee_payroll.id GROUP BY gender;";
 		List<Double> sumOfSalaryBasedOnGender = new ArrayList<>();
 				
 		try (Connection connection = getConnection();){
@@ -209,7 +209,7 @@ public class EmployeePayrollDBService {
 	
 	public List<Double> getAverageOfSalaryBasedOnGenderUsingStatement() {
 		
-		String sqlStatement = "SELECT gender, AVG(salary) AS AverageSalary FROM employee_payroll GROUP BY gender;";
+		String sqlStatement = "SELECT gender, AVG(salary) AS AverageSalary FROM employee JOIN employee_payroll ON employee.employee_ID = employee_payroll.id GROUP BY gender;";
 		List<Double> averageOfSalaryBasedOnGender = new ArrayList<>();
 				
 		try (Connection connection = getConnection();){
@@ -228,7 +228,7 @@ public class EmployeePayrollDBService {
 	
 	public List<Double> getMinimumSalaryBasedOnGenderUsingStatement() {
 		
-		String sqlStatement = "SELECT gender, MIN(salary) AS MinimumSalary FROM employee_payroll GROUP BY gender;";
+		String sqlStatement = "SELECT gender, MIN(salary) AS MinimumSalary FROM employee JOIN employee_payroll ON employee.employee_ID = employee_payroll.id GROUP BY gender;";
 		List<Double> MinimumSalaryBasedOnGender = new ArrayList<>();
 				
 		try (Connection connection = getConnection();){
@@ -248,7 +248,7 @@ public class EmployeePayrollDBService {
 	
 	public List<Double> getMaximumSalaryBasedOnGenderUsingStatement() {
 		
-		String sqlStatement = "SELECT gender, MAX(salary) AS MaximumSalary FROM employee_payroll GROUP BY gender;";
+		String sqlStatement = "SELECT gender, MAX(salary) AS MaximumSalary FROM employee JOIN employee_payroll ON employee.employee_ID = employee_payroll.id GROUP BY gender;";
 		List<Double> MaximumSalaryBasedOnGender = new ArrayList<>();
 				
 		try (Connection connection = getConnection();){
@@ -268,7 +268,7 @@ public class EmployeePayrollDBService {
 
 	public List<Integer> getCountOfEmployeesBasedOnGenderUsingStatement() {
 		
-		String sqlStatement = "SELECT gender, COUNT(gender) AS CountBasedOnGender FROM employee_payroll GROUP BY gender;";
+		String sqlStatement = "SELECT gender, COUNT(gender) AS CountBasedOnGender FROM employee JOIN employee_payroll ON employee.employee_ID = employee_payroll.id GROUP BY gender;";
 		List<Integer> CountBasedOnGender = new ArrayList<>();
 				
 		try (Connection connection = getConnection();){

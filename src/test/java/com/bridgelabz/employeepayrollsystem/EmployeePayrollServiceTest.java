@@ -145,9 +145,19 @@ public class EmployeePayrollServiceTest {
 		Assert.assertEquals(true,result);
 	}
 	 @Test
-	    public void givenNewEmployeePayrollData_WhenCorrect_InsertToEMployeeAndPayrollTable(){
+	    public void givenNewEmployeePayrollData_WhenCorrect_InsertToEmployeeAndPayrollTable(){
 	        EmployeePayrollService employeePayrollService = new EmployeePayrollService();
 	        Employee employee=new Employee(3,"SHUBHA","F","15/76, EAT STREET", 9349399223L,LocalDate.of(2021,8,20),301);
+	        Payroll updatedPayroll=employeePayrollService.insertEmployeePayrollValues(employee,20000.00);
+	        boolean result = employeePayrollService.compareEmployeePayrollInsertSync(employee.getName(),updatedPayroll);
+	        Assert.assertTrue(result);
+	    }
+	 @Test
+	    public void givenNewEmployeePayrollDataWithDepartment_WhenCorrect_InsertToEmployeeAndPayrollTable(){
+	        EmployeePayrollService employeePayrollService = new EmployeePayrollService();
+	        Employee employee=new Employee(4,"VISMAYA","F","BANASHANKARI", 910026270L,LocalDate.of(2021,8,21),300);
+	        Department department = new Department(1,"ENGINEER");
+	        employee.setDepartmentList(List.of(department));
 	        Payroll updatedPayroll=employeePayrollService.insertEmployeePayrollValues(employee,20000.00);
 	        boolean result = employeePayrollService.compareEmployeePayrollInsertSync(employee.getName(),updatedPayroll);
 	        Assert.assertTrue(result);

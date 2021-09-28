@@ -11,7 +11,6 @@ import org.junit.Test;
 
 import com.bridgelabz.employeepayrollsystem.EmployeePayrollService.IOService;
 public class EmployeePayrollServiceTest {
-
 	@Test
 	public void given3EmployeesWhenWrittenToFileShouldMatchEmployeeEntries() {
 		EmployeePayrollData[] arrayOfEmps = {
@@ -145,5 +144,12 @@ public class EmployeePayrollServiceTest {
 		boolean result = employeePayrollService.checkEmployeePayrollInSyncWithDB("Mark");
 		Assert.assertEquals(true,result);
 	}
-	
+	 @Test
+	    public void givenNewEmployeePayrollData_WhenCorrect_InsertToEMployeeAndPayrollTable(){
+	        EmployeePayrollService employeePayrollService = new EmployeePayrollService();
+	        Employee employee=new Employee(3,"SHUBHA","F","15/76, EAT STREET", 9349399223L,LocalDate.of(2021,8,20),301);
+	        Payroll updatedPayroll=employeePayrollService.insertEmployeePayrollValues(employee,20000.00);
+	        boolean result = employeePayrollService.compareEmployeePayrollInsertSync(employee.getName(),updatedPayroll);
+	        Assert.assertTrue(result);
+	    }
 }

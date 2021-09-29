@@ -11,7 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.sql.Date;
 
-import com.bridgelabz.employeepayrollsystem.EmployeePayrollException.ExceptionType;	
+import com.bridgelabz.employeepayrollsystem.EmployeePayrollException.ExceptionType;
+import com.bridgelabz.employeepayrollsystem.EmployeePayrollService.IOService;	
 
 public class EmployeePayrollDBService {
 	private PreparedStatement employeePayrollDataStatement;
@@ -421,6 +422,37 @@ private List<Employee> getCompleteEmployeeDataList(ResultSet resultSet) {
     }
     return employeeList;
 }
+public List<EmployeePayrollData> deleteEmployeeFromDatabase(String name) {
+	
+	String query = String.format("UPDATE employee SET is_active = false WHERE employee_name = '%s';", name);
+	
+	try (Connection connection = this.getConnection()) {
+		Statement statement = connection.createStatement();
+		statement.executeUpdate(query);
+		return this.readData();
+		
+	} catch (SQLException e) {
+		throw new EmployeePayrollException(EmployeePayrollException.ExceptionType.CONNECTION_FAILED, e.getMessage());
+	}
+}
+public int getEmployeeActiveStatus(String name) {
+	
+	String sqlStatement = String.format("SELECT is_active FROM employee WHERE employee_name = '%s';", name);
+	int isActive = 1;
+	
+	try (Connection connection = getConnection();){
+		Statement statement = connection.createStatement();
+		ResultSet resultSet = statement.executeQuery(sqlStatement);
+		while(resultSet.next()) {
+			isActive = resultSet.getInt("is_active");
+		}
+	}
+	catch(SQLException exception){
+		throw new EmployeePayrollException(EmployeePayrollException.ExceptionType.DATABASE_EXCEPTION, exception.getMessage());
+	}
+	return isActive;
+}
+
 	
 	
 }

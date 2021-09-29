@@ -214,6 +214,12 @@ public class EmployeePayrollService {
 	    public boolean compareEmployeePayrollInsertSync(String name,Payroll payroll) {
 	        return payroll.toString().equals(readEmployeePayrollData(IOService.DB_IO,name).get(0).getPayroll().toString());
 	    }
+	    public void deleteEmployeeToPayroll(String name) throws EmployeePayrollException {
+			this.employeePayrollList = this.employeePayrollDBService.deleteEmployeeFromDatabase(name);
+		}
+	    public int checkedRecordDeletedFromDatabase(String name) throws EmployeePayrollException {
+			return employeePayrollDBService.getEmployeeActiveStatus(name);
+		}
 	
 	
 }

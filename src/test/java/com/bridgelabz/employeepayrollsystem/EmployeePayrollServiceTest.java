@@ -162,4 +162,13 @@ public class EmployeePayrollServiceTest {
 	        boolean result = employeePayrollService.compareEmployeePayrollInsertSync(employee.getName(),updatedPayroll);
 	        Assert.assertTrue(result);
 	    }
+	 @Test
+	 public void givenEmployeePayroll_WhenDeleteRecord_ShouldeSyncWithDB(){
+	 	
+	 	EmployeePayrollService employeePayrollService = new EmployeePayrollService();
+	 	employeePayrollService.readEmployeePayrollData(IOService.DB_IO);
+	 	employeePayrollService.deleteEmployeeToPayroll("NAMAN");
+	 	int result = employeePayrollService.checkedRecordDeletedFromDatabase("NAMAN");
+	 	Assert.assertEquals(0, result);
+	 }
 }
